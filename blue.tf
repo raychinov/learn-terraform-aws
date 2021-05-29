@@ -1,14 +1,17 @@
 resource "aws_instance" "blue" {
   count = var.enable_blue_env ? var.blue_instance_count : 0
-
   ami                    = data.aws_ami.amazon_linux.id
   instance_type          = "t2.micro"
   subnet_id              = module.vpc.public_subnets[count.index % length(module.vpc.public_subnets)]
   vpc_security_group_ids = [module.app_security_group.this_security_group_id]
+  associate_public_ip_address = true
+  key_name      = aws_key_pair.generated_key.key_name
   user_data = templatefile("${path.module}/init-script.sh", {
     file_content = "version 1.0 - #${count.index}"
+    efs_ip = "${aws_efs_mount_target.mount.ip_address}"
+    srv_index = "${count.index}"
   })
-
+  depends_on = [aws_efs_mount_target.mount]
   tags = {
     Name = "version-1.0-${count.index}"
   }
@@ -34,3 +37,4 @@ resource "aws_lb_target_group_attachment" "blue" {
   target_id        = aws_instance.blue[count.index].id
   port             = 80
 }
+

@@ -21,13 +21,15 @@ module "vpc" {
   enable_vpn_gateway = var.enable_vpn_gateway
 }
 
+##### Security Groups ########
 module "app_security_group" {
   source  = "terraform-aws-modules/security-group/aws//modules/web"
   version = "3.17.0"
 
   name        = "web-sg"
-  description = "Security group for web-servers with HTTP ports open within VPC"
+  description = "Security group for web-servers"
   vpc_id      = module.vpc.vpc_id
+  auto_ingress_rules = ["http-80-tcp","ssh-tcp","nfs-tcp","mysql-tcp"]
 
   #   ingress_cidr_blocks = module.vpc.public_subnets_cidr_blocks
   ingress_cidr_blocks = ["0.0.0.0/0"]
@@ -38,12 +40,14 @@ module "lb_security_group" {
   version = "3.17.0"
 
   name        = "lb-sg"
-  description = "Security group for load balancer with HTTP ports open within VPC"
+  description = "Security group for load balancer"
   vpc_id      = module.vpc.vpc_id
 
+  auto_ingress_rules = ["http-80-tcp","ssh-tcp","nfs-tcp","mysql-tcp"]
   ingress_cidr_blocks = ["0.0.0.0/0"]
 }
 
+######################################
 data "aws_ami" "amazon_linux" {
   most_recent = true
   owners      = ["amazon"]
@@ -60,7 +64,7 @@ resource "random_pet" "app" {
 }
 
 resource "aws_lb" "app" {
-  name               = "main-app-${random_pet.app.id}-lb"
+  name               = "${random_pet.app.id}-lb"
   internal           = false
   load_balancer_type = "application"
   subnets            = module.vpc.public_subnets
@@ -77,3 +81,4 @@ resource "aws_lb_listener" "app" {
     target_group_arn = aws_lb_target_group.blue.arn
   }
 }
+
