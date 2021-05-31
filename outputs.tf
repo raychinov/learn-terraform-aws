@@ -9,7 +9,7 @@ resource "local_file" "private_key" {
 }
 
 output "ssh_access" {
-  value = ssh ec2-user@${aws_instance.blue[0].public_ip} -i ${local_file.private_key.filename}
+  value = "ssh ec2-user@${aws_instance.blue[0].public_ip} -i ${local_file.private_key.filename}"
 }
 
 resource "local_file" "credentials" {
