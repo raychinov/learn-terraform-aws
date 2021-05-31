@@ -30,3 +30,6 @@ override.tf.json
 
 # Private key file
 *.pem
+
+# Debug credentials
+credentials

@@ -6,7 +6,7 @@ IDs, hostnames, user IDs, file names, and some names associated with network acc
 
 Namespaces are a fundamental aspect of containers on Linux.
 
-The term "namespace" is often used for a type of namespace (e.g. process ID) as well for a particular space of names.
+The term \"namespace\" is often used for a type of namespace (e.g. process ID) as well for a particular space of names.
 
 A Linux system starts out with a single namespace of each type, used by all processes. Processes can create additional
 namespaces and join different namespaces.
