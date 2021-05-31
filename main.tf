@@ -8,7 +8,7 @@ data "aws_availability_zones" "available" {
 
 module "vpc" {
   source  = "terraform-aws-modules/vpc/aws"
-  version = "2.64.0"
+  version = "2.77.0"
 
   name = "main-vpc"
   cidr = var.vpc_cidr_block
@@ -35,6 +35,17 @@ module "app_security_group" {
   ingress_cidr_blocks = ["0.0.0.0/0"]
 }
 
+module "db_security_group" {
+  source  = "terraform-aws-modules/security-group/aws//modules/mysql"
+  version = "3.17.0"
+
+  name        = "mysql-sg"
+  description = "Security group for DB-servers"
+  vpc_id      = module.vpc.vpc_id
+#  auto_ingress_rules = ["http-80-tcp","ssh-tcp","nfs-tcp","mysql-tcp"]
+  ingress_cidr_blocks = ["0.0.0.0/0"]
+}
+
 module "lb_security_group" {
   source  = "terraform-aws-modules/security-group/aws//modules/web"
   version = "3.17.0"
@@ -47,7 +58,6 @@ module "lb_security_group" {
   ingress_cidr_blocks = ["0.0.0.0/0"]
 }
 
-######################################
 data "aws_ami" "amazon_linux" {
   most_recent = true
   owners      = ["amazon"]

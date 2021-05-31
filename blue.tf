@@ -7,15 +7,33 @@ resource "aws_instance" "blue" {
   associate_public_ip_address = true
   key_name      = aws_key_pair.generated_key.key_name
   user_data = templatefile("${path.module}/init-script.sh", {
-    file_content = "version 1.0 - #${count.index}"
     efs_ip = "${aws_efs_mount_target.mount.ip_address}"
     srv_index = "${count.index}"
+    mysqlhost = "${aws_db_instance.mysql.address}"
+    mysqldb = "${aws_db_instance.mysql.name}"
+    mysqluser = "${aws_db_instance.mysql.username}"
+    mysqlpass = "${aws_db_instance.mysql.password}"
+    siteurl = "${aws_lb.app.dns_name}"
+    wp_post = file("wp_post.txt")
+    optimize_script = data.template_file.optimize.rendered
+
   })
   depends_on = [aws_efs_mount_target.mount]
   tags = {
     Name = "version-1.0-${count.index}"
   }
 }
+data "template_file" "optimize" {
+  template = file("optimize.sh")
+  vars = {                                   
+    db_port = aws_db_instance.mysql.port     
+    db_host = aws_db_instance.mysql.address
+    db_user = aws_db_instance.mysql.username
+    db_pass = aws_db_instance.mysql.password
+    db_name = aws_db_instance.mysql.name
+  }                                          
+}                                            
+
 
 resource "aws_lb_target_group" "blue" {
   name     = "blue-tg-${random_pet.app.id}-lb"
