@@ -25,14 +25,14 @@ resource "aws_instance" "blue" {
 }
 data "template_file" "optimize" {
   template = file("optimize.sh")
-  vars = {                                   
-    db_port = aws_db_instance.mysql.port     
+  vars = {
+    db_port = aws_db_instance.mysql.port
     db_host = aws_db_instance.mysql.address
     db_user = aws_db_instance.mysql.username
     db_pass = aws_db_instance.mysql.password
     db_name = aws_db_instance.mysql.name
-  }                                          
-}                                            
+  }
+}
 
 
 resource "aws_lb_target_group" "blue" {

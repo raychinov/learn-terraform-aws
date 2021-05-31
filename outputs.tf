@@ -1,6 +1,6 @@
-output "web_access" {                                         
+output "web_access" {
   value = "http://${aws_lb.app.dns_name}"
-}                                                         
+}
 
 resource "local_file" "private_key" {
   sensitive_content = tls_private_key.bluekey.private_key_pem
@@ -8,9 +8,9 @@ resource "local_file" "private_key" {
   file_permission = "0600"
 }
 
-output "ssh_access" {                                         
+output "ssh_access" {
   value = "Credentials for SSH and DB access can be found in ${local_file.credentials.filename}"
-}                                                         
+}
 
 resource "local_file" "credentials" {
   sensitive_content = <<_EOF
