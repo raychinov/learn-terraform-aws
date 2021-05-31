@@ -2,7 +2,7 @@
 
 ## AWS Terraform Setup for semi-distributed Wordpress infrastructure
 
-## Builds an infrastructure consisting of:
+### Builds an infrastructure consisting of:
 
 - two web servers (Wordpress)
 - an Application Load Balancer for HTTP traffic
@@ -32,9 +32,9 @@ terraform apply -auto-approve
 ### Destroying the Infrastructure:
 
 ```bash
-cd learn-terraform-aws
+cd ~/learn-terraform-aws
 ## The one command to bring it down
-terraform apply -auto-approve
+terraform destroy -auto-approve
 ```
 
 This is a educational project, so the credentials/ssh_keys are generated for every build. Pointers to to access credentials are given as output at the end of the run.
