@@ -9,14 +9,14 @@ resource "local_file" "private_key" {
 }
 
 output "ssh_access" {
-  value = "Credentials for SSH and DB access can be found in ${local_file.credentials.filename}"
+  value = ssh ec2-user@${aws_instance.blue[0].public_ip} -i ${local_file.private_key.filename}
 }
 
 resource "local_file" "credentials" {
   sensitive_content = <<_EOF
-mysql -h ${aws_db_instance.mysql.address} -P ${aws_db_instance.mysql.port} -u ${aws_db_instance.mysql.username} -p${random_password.db_pass.result}
 ssh ec2-user@${aws_instance.blue[0].public_ip} -i ${local_file.private_key.filename}
-
+http://${aws_lb.app.dns_name}
+mysql -h ${aws_db_instance.mysql.address} -P ${aws_db_instance.mysql.port} -u ${aws_db_instance.mysql.username} -p${random_password.db_pass.result}
 _EOF
   filename = "credentials"
 }
